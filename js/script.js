@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
       navToggle.classList.toggle('open');
     });
   
-    // Smooth scroll for anchor links
+    // Smooth scroll for anchor links with enhanced mobile support
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener('click', function (e) {
         const href = this.getAttribute('href');
@@ -38,10 +38,28 @@ document.addEventListener('DOMContentLoaded', function () {
         if (el) {
           e.preventDefault();
           const offset = 70;
-          const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
-          window.scrollTo({ top, behavior: 'smooth' });
-          // close mobile nav
-          if (nav.classList.contains('open')) nav.classList.remove('open');
+          const headerOffset = window.innerWidth < 992 ? 60 : 70; // Smaller offset for mobile
+          const elementPosition = el.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          
+          // Close mobile nav if open
+          if (nav && nav.classList.contains('open')) {
+            nav.classList.remove('open');
+            navToggle && navToggle.classList.remove('open');
+          }
+          
+          // Smooth scroll to target
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+          
+          // Update URL without adding to history
+          if (history.pushState) {
+            history.pushState(null, null, href);
+          } else {
+            location.hash = href;
+          }
         }
       });
     });
