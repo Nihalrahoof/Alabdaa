@@ -243,8 +243,8 @@
   <!-- EXPERTISE -->
   <section id="expertise" class="section-accent">
     <div class="container">
-      <h2 class="center light" data-aos="fade-up">Our Areas of Expertise</h2>
-      <p class="center light muted" data-aos="fade-up" data-aos-delay="80">Specialized knowledge across multiple domains for comprehensive business support.</p>
+      <h2 class="center" data-aos="fade-up">Our Areas of Expertise</h2>
+      <p class="center muted" data-aos="fade-up" data-aos-delay="80">Specialized knowledge across multiple domains for comprehensive business support.</p>
       
       <div class="expertise-grid" data-aos="fade-up" data-aos-delay="120">
         <div class="expertise-item">
@@ -378,8 +378,8 @@
   <!-- TESTIMONIALS -->
   <section id="testimonials" class="section-accent">
     <div class="container">
-      <h2 class="center light" data-aos="fade-up">What Our Clients Say</h2>
-      <p class="center light muted" data-aos="fade-up" data-aos-delay="80">Trusted by businesses and individuals across the UAE.</p>
+      <h2 class="center" data-aos="fade-up">What Our Clients Say</h2>
+      <p class="center muted" data-aos="fade-up" data-aos-delay="80">Trusted by businesses and individuals across the UAE.</p>
       
       <div class="testimonials" data-aos="fade-up" data-aos-delay="80">
         <blockquote>
@@ -430,33 +430,83 @@
 
   <!-- CONTACT -->
   <section id="contact" class="section-contact">
-    <div class="container contact-grid">
-      <div data-aos="fade-right">
-        <h2>Contact & Consultation</h2>
-        <p class="muted">Ready to elevate your business? Schedule a consultation with our experts and discover how we can streamline your operations and ensure regulatory compliance.</p>
-        <ul class="contact-info">
-          <li><strong>Email:</strong> info@alabdaa.com</li>
-          <li><strong>Phone:</strong> +971 4 000 0000</li>
-          <li><strong>WhatsApp:</strong> +971 50 000 0000</li>
-          <li><strong>Office:</strong> Dubai, UAE</li>
-          <li><strong>Business Hours:</strong> Sunday - Thursday: 8:00 AM - 6:00 PM</li>
-        </ul>
-        <div class="small-muted">Your business information is protected by strict confidentiality protocols. All documents and communications are handled with the highest security standards.</div>
+    <div class="container">
+      <div class="contact-header" data-aos="fade-up">
+        <h2 class="center">Contact & Consultation</h2>
+        <p class="center muted">Ready to elevate your business? Schedule a consultation with our experts.</p>
       </div>
+      
+      <div class="contact-grid">
+        <div class="contact-info-section" data-aos="fade-right">
+          <h3>Get In Touch</h3>
+          <div class="contact-methods">
+            <div class="contact-method">
+              <div class="contact-icon">📧</div>
+              <div class="contact-details">
+                <h4>Email</h4>
+                <p>info@alabdaa.com</p>
+              </div>
+            </div>
+            
+            <div class="contact-method">
+              <div class="contact-icon">📞</div>
+              <div class="contact-details">
+                <h4>Phone</h4>
+                <p>+971 4 000 0000</p>
+              </div>
+            </div>
+            
+            <div class="contact-method">
+              <div class="contact-icon">💬</div>
+              <div class="contact-details">
+                <h4>WhatsApp</h4>
+                <p>+971 50 000 0000</p>
+              </div>
+            </div>
+            
+            <div class="contact-method">
+              <div class="contact-icon">📍</div>
+              <div class="contact-details">
+                <h4>Office</h4>
+                <p>Dubai, UAE</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="contact-note">
+            <span>🔒</span> Your information is protected by strict confidentiality protocols.
+          </div>
+        </div>
 
-      <form id="contactForm" class="form" data-aos="fade-left">
-        <div class="grid-2">
-          <input type="text" id="name" placeholder="Full Name" required>
-          <input type="text" id="phone" placeholder="Phone Number or Email" required>
+        <div class="contact-form-section" data-aos="fade-left">
+          <h3>Schedule Consultation</h3>
+          <form id="contactForm" class="form">
+            <div class="form-row">
+              <div class="form-group">
+                <input type="text" id="name" placeholder="Full Name *" required>
+              </div>
+              <div class="form-group">
+                <input type="text" id="phone" placeholder="Phone or Email *" required>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <input type="text" id="subject" placeholder="Service Required">
+            </div>
+            
+            <div class="form-group">
+              <textarea id="message" rows="4" placeholder="Project details and timeline"></textarea>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn primary">Send Request</button>
+              <button type="button" id="clearBtn" class="btn ghost">Clear</button>
+            </div>
+            
+            <div id="formMsg" class="form-msg" aria-live="polite"></div>
+          </form>
         </div>
-        <input type="text" id="subject" placeholder="Service Required (e.g., Company Formation, Visa Processing)" >
-        <textarea id="message" rows="6" placeholder="Please provide details about your business requirements and timeline"></textarea>
-        <div class="form-row">
-          <button type="submit" class="btn primary">Send Consultation Request</button>
-          <button type="button" id="clearBtn" class="btn ghost">Clear Form</button>
-        </div>
-        <div id="formMsg" class="form-msg" aria-live="polite"></div>
-      </form>
+      </div>
     </div>
   </section>
 

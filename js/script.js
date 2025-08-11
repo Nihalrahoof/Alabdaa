@@ -105,12 +105,16 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // Enhanced hero scale effect
+    // Enhanced hero parallax effect
     const heroBg = document.querySelector('.hero-bg');
     if (heroBg) {
       window.addEventListener('scroll', () => {
         const sc = window.scrollY;
-        heroBg.style.transform = `scale(${1 + Math.min(sc / 6000, 0.06)}) translateY(${sc / 12}px)`;
+        const parallaxSpeed = 0.5;
+        const scaleSpeed = 0.0001;
+        
+        // Parallax movement
+        heroBg.style.transform = `scale(${1.1 + (sc * scaleSpeed)}) translateY(${sc * parallaxSpeed}px)`;
       }, { passive: true });
     }
 
