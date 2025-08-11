@@ -1,6 +1,21 @@
 // INIT
 document.addEventListener('DOMContentLoaded', function () {
-    AOS.init({ duration: 700, once: true, easing: 'ease-out-cubic' });
+    // Safely init AOS; if unavailable, ensure content remains visible
+    try {
+      if (window.AOS && typeof AOS.init === 'function') {
+        AOS.init({ duration: 700, once: true, easing: 'ease-out-cubic' });
+      } else {
+        document.querySelectorAll('[data-aos]').forEach(el => {
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        });
+      }
+    } catch (err) {
+      document.querySelectorAll('[data-aos]').forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+    }
   
     // year
     const y = document.getElementById('year');
@@ -85,23 +100,6 @@ document.addEventListener('DOMContentLoaded', function () {
           submitBtn.textContent = originalText;
           submitBtn.disabled = false;
         }, 1500);
-
-        // optionally send to backend via fetch:
-        // fetch('/api/enquiry', {
-        //   method:'POST', 
-        //   headers:{'Content-Type':'application/json'}, 
-        //   body: JSON.stringify({name,phone,subject,message})
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //   formMsg.style.color = '#059669';
-        //   formMsg.textContent = 'Thank you! Your enquiry has been received.';
-        //   form.reset();
-        // })
-        // .catch(error => {
-        //   formMsg.style.color = '#dc2626';
-        //   formMsg.textContent = 'Sorry, there was an error. Please try again.';
-        // });
       });
     }
 
@@ -144,70 +142,14 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
-    // Add smooth reveal animations for expertise items
-    const expertiseItems = document.querySelectorAll('.expertise-item');
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
-        }
+    // Add smooth reveal animations for expertise items if AOS missing
+    if (!(window.AOS && typeof AOS.init === 'function')) {
+      const expertiseItems = document.querySelectorAll('.expertise-item');
+      expertiseItems.forEach(item => {
+        item.style.opacity = '1';
+        item.style.transform = 'none';
+        item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
       });
-    }, observerOptions);
-
-    expertiseItems.forEach(item => {
-      item.style.opacity = '0';
-      item.style.transform = 'translateY(20px)';
-      item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-      observer.observe(item);
-    });
-
-    // Add counter animation for hero stats
-    const counters = document.querySelectorAll('.card strong');
-    const animateCounters = () => {
-      counters.forEach(counter => {
-        const target = counter.textContent;
-        const isPercentage = target.includes('%');
-        const isNumber = /\d+/.test(target);
-        
-        if (isNumber && !isPercentage) {
-          const finalNumber = parseInt(target.replace(/\D/g, ''));
-          let currentNumber = 0;
-          const increment = finalNumber / 50;
-          
-          const updateCounter = () => {
-            if (currentNumber < finalNumber) {
-              currentNumber += increment;
-              counter.textContent = Math.floor(currentNumber) + (target.includes('+') ? '+' : '');
-              requestAnimationFrame(updateCounter);
-            } else {
-              counter.textContent = target;
-            }
-          };
-          
-          updateCounter();
-        }
-      });
-    };
-
-    // Trigger counter animation when hero section is in view
-    const heroSection = document.querySelector('.hero-section');
-    const heroObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setTimeout(animateCounters, 1000);
-          heroObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.5 });
-
-    if (heroSection) {
-      heroObserver.observe(heroSection);
     }
   });
   
