@@ -29,40 +29,110 @@ document.addEventListener('DOMContentLoaded', function () {
       navToggle.classList.toggle('open');
     });
   
-    // Smooth scroll for anchor links with enhanced mobile support
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        if (!href || href === '#') return;
-        const el = document.querySelector(href);
-        if (el) {
-          e.preventDefault();
-          const offset = 70;
-          const headerOffset = window.innerWidth < 992 ? 60 : 70; // Smaller offset for mobile
-          const elementPosition = el.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-          
-          // Close mobile nav if open
-          if (nav && nav.classList.contains('open')) {
-            nav.classList.remove('open');
-            navToggle && navToggle.classList.remove('open');
-          }
-          
-          // Smooth scroll to target
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
+    // Initialize smooth scroll polyfill
+    const smoothScroll = new SmoothScroll();
+    
+    // Scroll to target function using polyfill
+    function scrollToTarget(hash) {
+      if (!hash || hash === '#') {
+        smoothScroll.scroll(window, 0, { speed: 500 });
+        return;
+      }
+      
+      const target = document.querySelector(hash);
+      if (!target) return;
+      
+      // Close mobile menu if open
+      if (nav && nav.classList.contains('open')) {
+        nav.classList.remove('open');
+        navToggle && navToggle.classList.remove('open');
+      }
+      
+      // Calculate header offset
+      const header = document.querySelector('header');
+      const headerHeight = header ? header.offsetHeight : (window.innerWidth < 992 ? 80 : 100);
+      
+      // Get target position
+      const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+      
+      // Use polyfill for smooth scrolling
+      smoothScroll.scroll(window, targetPosition, {
+        speed: 500,
+        speedAsDuration: true,
+        easing: 'easeInOutCubic'
+      });
+      
+      // Update URL
+      history.replaceState(null, null, hash);
+    }
+    
+    // Handle all anchor clicks
+    document.addEventListener('click', function(e) {
+      const link = e.target.closest('a[href^="#"]');
+      if (!link) return;
+      
+      const hash = link.getAttribute('href');
+      if (!hash || hash === '#') return;
+      
+      e.preventDefault();
+      scrollToTarget(hash);
+    });
+    
+    // Handle initial page load with hash
+    function handleInitialScroll() {
+      if (window.location.hash) {
+        // Small delay to ensure all elements are rendered
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            scrollToTarget(window.location.hash);
           });
-          
-          // Update URL without adding to history
-          if (history.pushState) {
-            history.pushState(null, null, href);
-          } else {
-            location.hash = href;
-          }
+        });
+      }
+    }
+    
+    // Initialize with multiple fallbacks
+    function initializeScrolling() {
+      console.log('Initializing scrolling...');
+      
+      // First try with a small delay
+      setTimeout(() => {
+        if (window.location.hash) {
+          console.log('Initial scroll to hash:', window.location.hash);
+          scrollToTarget(window.location.hash);
+        }
+      }, 100);
+      
+      // Additional check after fonts/images are loaded
+      window.addEventListener('load', () => {
+        console.log('Window loaded, checking hash...');
+        if (window.location.hash) {
+          setTimeout(() => {
+            scrollToTarget(window.location.hash);
+          }, 200);
         }
       });
+    }
+    
+    // Start initialization
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeScrolling);
+    } else {
+      initializeScrolling();
+    }
+    
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', function() {
+      if (window.location.hash) {
+        scrollToTarget(window.location.hash);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     });
+    
+    // Force scroll to top on page refresh
+    window.onbeforeunload = function() {
+      window.scrollTo(0, 0);
+    };
   
     // Form handler (enhanced)
     const form = document.getElementById('contactForm');
