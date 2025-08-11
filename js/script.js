@@ -61,72 +61,88 @@ document.addEventListener('DOMContentLoaded', function () {
       // Only run on mobile
       if (window.innerWidth > 991) return;
       
-      // Initialize animation elements
-      const animationElements = {
-        // Hero section
-        '.hero-content h1': 'fade-up',
-        '.hero-content p': 'fade-up',
-        '.hero-buttons .btn': 'fade-up',
-        
-        // About section
-        '.about-content': 'fade-up',
-        '.about-image': 'fade-left',
-        
-        // Services section
-        '.services-header': 'fade-up',
-        '.service:nth-child(odd)': 'fade-right',
-        '.service:nth-child(even)': 'fade-left',
-        
-        // Process section
-        '.process-header': 'fade-up',
-        '.process-step:nth-child(1)': 'fade-up',
-        '.process-step:nth-child(2)': 'fade-up',
-        '.process-step:nth-child(3)': 'fade-up',
-        '.process-step:nth-child(4)': 'fade-up',
-        
-        // Testimonials
-        '.testimonials-header': 'fade-up',
-        '.testimonial-card': 'fade-up',
-        
-        // Contact section
-        '.contact-header': 'fade-up',
-        '.contact-form': 'fade-up',
-        '.contact-info': 'fade-up'
+      // Initialize Intersection Observer for scroll animations
+      const animateOnScroll = (entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+            observer.unobserve(entry.target);
+          }
+        });
       };
       
-      // Apply animation classes
-      Object.entries(animationElements).forEach(([selector, animation], index) => {
+      const observer = new IntersectionObserver(animateOnScroll, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      });
+      
+      // Animation elements configuration
+      const animationElements = [
+        // Hero section
+        { selector: '.hero-content h1', animation: 'fade-up', delay: 0 },
+        { selector: '.hero-content p', animation: 'fade-up', delay: 100 },
+        { selector: '.hero-buttons .btn', animation: 'fade-up', delay: 200 },
+        
+        // About section
+        { selector: '.about-header', animation: 'fade-up', delay: 0 },
+        { selector: '.about-content', animation: 'fade-up', delay: 100 },
+        { selector: '.about-image', animation: 'fade-left', delay: 200 },
+        
+        // Services section
+        { selector: '.services-header', animation: 'fade-up', delay: 0 },
+        { selector: '.service:nth-child(odd)', animation: 'fade-right', delay: 100 },
+        { selector: '.service:nth-child(even)', animation: 'fade-left', delay: 100 },
+        
+        // Process section
+        { selector: '.process-header', animation: 'fade-up', delay: 0 },
+        { selector: '.process-step:nth-child(1)', animation: 'fade-up', delay: 100 },
+        { selector: '.process-step:nth-child(2)', animation: 'fade-up', delay: 200 },
+        { selector: '.process-step:nth-child(3)', animation: 'fade-up', delay: 300 },
+        { selector: '.process-step:nth-child(4)', animation: 'fade-up', delay: 400 },
+        
+        // Testimonials
+        { selector: '.testimonials-header', animation: 'fade-up', delay: 0 },
+        { selector: '.testimonial-card', animation: 'fade-up', delay: 100 },
+        
+        // Contact section
+        { selector: '.contact-header', animation: 'fade-up', delay: 0 },
+        { selector: '.contact-form', animation: 'fade-up', delay: 100 },
+        { selector: '.contact-info', animation: 'fade-up', delay: 200 },
+        
+        // Generic section animations
+        { selector: 'section:not(.hero-section)', animation: 'fade-up', delay: 0 },
+        { selector: 'h2, h3, h4, .card, .feature', animation: 'fade-up', delay: 100 },
+        { selector: 'p, .btn, img', animation: 'fade-up', delay: 200 }
+      ];
+      
+      // Apply animation classes and set up observers
+      animationElements.forEach(({ selector, animation, delay = 0 }) => {
         const elements = document.querySelectorAll(selector);
-        elements.forEach((el, i) => {
-          el.setAttribute('data-aos', animation);
+        elements.forEach((el, index) => {
+          // Skip if element is already animated
+          if (el.hasAttribute('data-aos-processed')) return;
+          
+          // Set initial styles
           el.style.opacity = '0';
-          el.style.transform = 'translateY(20px)';
-          el.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-          if (i > 0) {
-            el.style.transitionDelay = `${i * 0.1}s`;
-          }
+          el.style.transform = animation.includes('up') ? 'translateY(30px)' : 
+                             animation.includes('down') ? 'translateY(-30px)' : 
+                             animation.includes('left') ? 'translateX(30px)' : 
+                             animation.includes('right') ? 'translateX(-30px)' : 'none';
+          
+          el.style.transition = `all 0.6s cubic-bezier(0.4, 0, 0.2, 1) ${delay + (index * 100)}ms`;
+          el.style.willChange = 'opacity, transform';
+          
+          // Mark as processed
+          el.setAttribute('data-aos-processed', 'true');
+          
+          // Observe the element
+          observer.observe(el);
         });
       });
       
-      // Handle scroll animations
-      const animateOnScroll = () => {
-        const elements = document.querySelectorAll('[data-aos]');
-        const windowHeight = window.innerHeight;
-        const windowTop = window.scrollY;
-        const windowBottom = windowTop + windowHeight;
-        
-        elements.forEach(element => {
-          const elementTop = element.getBoundingClientRect().top + window.scrollY;
-          const elementBottom = elementTop + element.offsetHeight;
-          
-          // Check if element is in viewport
-          if (elementTop < windowBottom && elementBottom > windowTop) {
-            element.style.opacity = '1';
-            element.style.transform = 'translateY(0)';
-          }
-        });
-        
-        // Parallax effect for hero background
+      // Parallax effect for hero background
+      const handleParallax = () => {
         const heroBg = document.querySelector('.hero-bg');
         if (heroBg) {
           const scrollPosition = window.scrollY;
@@ -134,14 +150,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       };
       
-      // Initial animation check
-      animateOnScroll();
+      // Initial check for elements already in viewport
+      document.querySelectorAll('[data-aos-processed]').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }
+      });
       
-      // Throttle scroll events
+      // Handle scroll for parallax
       let isScrolling;
       window.addEventListener('scroll', () => {
         window.cancelAnimationFrame(isScrolling);
-        isScrolling = window.requestAnimationFrame(animateOnScroll);
+        isScrolling = window.requestAnimationFrame(handleParallax);
       }, { passive: true });
       
       // Animate on load
