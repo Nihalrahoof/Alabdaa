@@ -32,6 +32,138 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize smooth scroll polyfill
     const smoothScroll = new SmoothScroll();
     
+    // Enhanced mobile animations and scroll effects
+    function setupMobileAnimations() {
+      // Only run on mobile
+      if (window.innerWidth > 991) return;
+      
+      // Initialize animation elements
+      const animationElements = {
+        // Hero section
+        '.hero-content h1': 'fade-up',
+        '.hero-content p': 'fade-up',
+        '.hero-buttons .btn': 'fade-up',
+        
+        // About section
+        '.about-content': 'fade-up',
+        '.about-image': 'fade-left',
+        
+        // Services section
+        '.services-header': 'fade-up',
+        '.service:nth-child(odd)': 'fade-right',
+        '.service:nth-child(even)': 'fade-left',
+        
+        // Process section
+        '.process-header': 'fade-up',
+        '.process-step:nth-child(1)': 'fade-up',
+        '.process-step:nth-child(2)': 'fade-up',
+        '.process-step:nth-child(3)': 'fade-up',
+        '.process-step:nth-child(4)': 'fade-up',
+        
+        // Testimonials
+        '.testimonials-header': 'fade-up',
+        '.testimonial-card': 'fade-up',
+        
+        // Contact section
+        '.contact-header': 'fade-up',
+        '.contact-form': 'fade-up',
+        '.contact-info': 'fade-up'
+      };
+      
+      // Apply animation classes
+      Object.entries(animationElements).forEach(([selector, animation], index) => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach((el, i) => {
+          el.setAttribute('data-aos', animation);
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(20px)';
+          el.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          if (i > 0) {
+            el.style.transitionDelay = `${i * 0.1}s`;
+          }
+        });
+      });
+      
+      // Handle scroll animations
+      const animateOnScroll = () => {
+        const elements = document.querySelectorAll('[data-aos]');
+        const windowHeight = window.innerHeight;
+        const windowTop = window.scrollY;
+        const windowBottom = windowTop + windowHeight;
+        
+        elements.forEach(element => {
+          const elementTop = element.getBoundingClientRect().top + window.scrollY;
+          const elementBottom = elementTop + element.offsetHeight;
+          
+          // Check if element is in viewport
+          if (elementTop < windowBottom && elementBottom > windowTop) {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+          }
+        });
+        
+        // Parallax effect for hero background
+        const heroBg = document.querySelector('.hero-bg');
+        if (heroBg) {
+          const scrollPosition = window.scrollY;
+          heroBg.style.transform = `translate3d(0, ${scrollPosition * 0.3}px, 0)`;
+        }
+      };
+      
+      // Initial animation check
+      animateOnScroll();
+      
+      // Throttle scroll events
+      let isScrolling;
+      window.addEventListener('scroll', () => {
+        window.cancelAnimationFrame(isScrolling);
+        isScrolling = window.requestAnimationFrame(animateOnScroll);
+      }, { passive: true });
+      
+      // Animate on load
+      setTimeout(animateOnScroll, 300);
+      
+          // Add tap feedback to interactive elements
+      const interactiveElements = document.querySelectorAll('.btn, .service, .testimonial-card, .process-step');
+      interactiveElements.forEach(el => {
+        el.style.cursor = 'pointer';
+        el.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease';
+        
+        el.addEventListener('touchstart', () => {
+          el.style.transform = 'scale(0.97)';
+          el.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+        }, { passive: true });
+        
+        el.addEventListener('touchend', () => {
+          el.style.transform = 'scale(1)';
+          el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+        }, { passive: true });
+      });
+      
+      // Add hover effect for devices with hover capability
+      const hasHover = window.matchMedia('(hover: hover)').matches;
+      if (hasHover) {
+        interactiveElements.forEach(el => {
+          el.addEventListener('mouseenter', () => {
+            el.style.transform = 'translateY(-2px)';
+            el.style.boxShadow = '0 6px 16px rgba(0,0,0,0.1)';
+          });
+          
+          el.addEventListener('mouseleave', () => {
+            el.style.transform = 'translateY(0)';
+            el.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+          });
+        });
+      }
+    }
+    
+    // Run mobile animations setup
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupMobileAnimations);
+    } else {
+      setupMobileAnimations();
+    }
+    
     // Scroll to target function using polyfill
     function scrollToTarget(hash) {
       if (!hash || hash === '#') {
