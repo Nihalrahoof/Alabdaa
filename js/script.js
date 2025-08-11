@@ -21,12 +21,36 @@ document.addEventListener('DOMContentLoaded', function () {
     const y = document.getElementById('year');
     if (y) y.textContent = new Date().getFullYear();
   
-    // nav toggle
+    // nav toggle and mobile menu handling
     const nav = document.getElementById('nav');
     const navToggle = document.getElementById('navToggle');
-    navToggle.addEventListener('click', () => {
+    
+    // Toggle mobile menu
+    const toggleMobileMenu = () => {
       nav.classList.toggle('open');
       navToggle.classList.toggle('open');
+    };
+    
+    // Toggle menu on button click
+    navToggle.addEventListener('click', toggleMobileMenu);
+    
+    // Close menu when clicking on nav links
+    document.querySelectorAll('nav a[href^="#"]').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 991) { // Only for mobile
+          toggleMobileMenu();
+        }
+      });
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (window.innerWidth <= 991 && 
+          !nav.contains(e.target) && 
+          !navToggle.contains(e.target) &&
+          nav.classList.contains('open')) {
+        toggleMobileMenu();
+      }
     });
   
     // Initialize smooth scroll polyfill
