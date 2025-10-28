@@ -1,6 +1,6 @@
 /* Mobile-specific animations */
 @media (max-width: 991px) {
-  /* Hero section adjustments for mobile */
+  /* Hero section with parallax effect for mobile */
   .hero-section {
     min-height: 100vh !important;
     min-height: 100dvh !important;
@@ -8,6 +8,18 @@
     padding-bottom: 40px !important;
     display: flex !important;
     align-items: center !important;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120%;
+    will-change: transform;
+    transition: transform 0.1s ease-out;
   }
   
   .hero-content {

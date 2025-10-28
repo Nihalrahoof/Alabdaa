@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // year
     const y = document.getElementById('year');
     if (y) y.textContent = new Date().getFullYear();
+    
+    // Initialize Services Carousel
+    setTimeout(initServicesCarousel, 100);
   
     // nav toggle and mobile menu handling
     const nav = document.getElementById('nav');
@@ -55,6 +58,114 @@ document.addEventListener('DOMContentLoaded', function () {
   
     // Initialize smooth scroll polyfill
     const smoothScroll = new SmoothScroll();
+    
+    // Mobile parallax effect for hero section
+    function setupParallax() {
+      if (window.innerWidth > 991) return; // Only for mobile
+      
+      const heroSection = document.querySelector('.hero-section');
+      const heroBg = document.querySelector('.hero-bg');
+      
+      if (!heroSection || !heroBg) return;
+      
+      let ticking = false;
+      let lastScrollY = window.scrollY;
+      
+      const updateParallax = () => {
+        const scrollY = window.scrollY;
+        const scrollDiff = scrollY - lastScrollY;
+        lastScrollY = scrollY;
+        
+        // Only apply parallax when hero section is in view
+        const heroRect = heroSection.getBoundingClientRect();
+        if (heroRect.bottom < 0 || heroRect.top > window.innerHeight) return;
+        
+        // Calculate parallax effect (slower movement for background)
+        const translateY = scrollY * 0.3; // Adjust this value to control parallax intensity
+        heroBg.style.transform = `scale(1.1) translateY(${translateY * 0.5}px)`;
+        
+        ticking = false;
+      };
+      
+      const onScroll = () => {
+        if (!ticking) {
+          window.requestAnimationFrame(updateParallax);
+          ticking = true;
+        }
+      };
+      
+      window.addEventListener('scroll', onScroll, { passive: true });
+      
+      // Cleanup function
+      return () => {
+        window.removeEventListener('scroll', onScroll);
+      };
+    }
+    
+    // Services Carousel Functionality
+    function initServicesCarousel() {
+      const track = document.querySelector('.services-track');
+      const prevButton = document.getElementById('prevButton') || document.querySelector('.carousel-control.prev');
+      const nextButton = document.getElementById('nextButton') || document.querySelector('.carousel-control.next');
+      
+      if (!track || !prevButton || !nextButton) return;
+      
+      const services = Array.from(track.querySelectorAll('.service'));
+      const gap = parseFloat(getComputedStyle(track).gap) || 0;
+      const serviceWidth = services[0].offsetWidth + gap;
+      
+      let currentIndex = 0;
+      const carouselContainer = document.querySelector('.services-carousel');
+      const containerWidth = carouselContainer.offsetWidth;
+      const visibleCount = Math.floor((containerWidth + gap) / serviceWidth);
+      const maxIndex = Math.max(0, services.length - visibleCount);
+      
+      // Update carousel position
+      function updateCarousel() {
+        track.style.transform = `translateX(-${currentIndex * serviceWidth}px)`;
+        
+        // Update button states
+        prevButton.disabled = currentIndex === 0;
+        prevButton.style.opacity = currentIndex === 0 ? '0.5' : '1';
+        nextButton.disabled = currentIndex >= maxIndex;
+        nextButton.style.opacity = currentIndex >= maxIndex ? '0.5' : '1';
+      }
+      
+      // Initialize button states
+      updateCarousel();
+      
+      // Event listeners for buttons
+      prevButton.addEventListener('click', () => {
+        if (currentIndex > 0) {
+          currentIndex--;
+          updateCarousel();
+        }
+      });
+      
+      nextButton.addEventListener('click', () => {
+        if (currentIndex < maxIndex) {
+          currentIndex++;
+          updateCarousel();
+        }
+      });
+      
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        // Recalculate service width and max index
+        const newServiceWidth = services[0].offsetWidth + parseInt(getComputedStyle(services[0]).marginRight);
+        const newMaxIndex = Math.max(0, services.length - (window.innerWidth >= 720 ? 2 : 1));
+        
+        // Update variables
+        currentIndex = Math.min(currentIndex, newMaxIndex);
+        
+        // Update carousel with new values
+        track.style.transform = `translateX(-${currentIndex * newServiceWidth}px)`;
+      });
+    }
+    
+    // Initialize parallax on load and resize
+    window.addEventListener('load', setupParallax);
+    window.addEventListener('resize', setupParallax);
     
     // Enhanced mobile animations and scroll effects
     function setupMobileAnimations() {
